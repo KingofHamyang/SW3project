@@ -1,7 +1,7 @@
 What is Redis?
 =======
 
-Redis is often referred as a  ***data structures*** server.
+Redis is often referred as a  **_data structures_** server.
 
 Building Redis
 =======

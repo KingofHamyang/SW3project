@@ -12,8 +12,8 @@ Building Redis
 % make
 ```
 
-+For 32 bit machine
-	+You can run a 64bit 32bit *Redis* binary using: 
+* For 32 bit machine
+  * You can run a ~~64bit~~ 32bit *Redis* binary using: 
 
 ```
 % make 32bit
@@ -23,7 +23,7 @@ Building Redis
 Link
 =======
 
-[Redis](https://redis.io
+[Redis](https://redis.io)
 
 ---------------------------
 

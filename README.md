@@ -2,7 +2,7 @@
 
 it includes 3 header files and main function
 
-## resource.h
+## Files
 
 - 1. resource.h
 

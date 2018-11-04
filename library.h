@@ -35,7 +35,7 @@ class library
         return res;
     }
 
-    void init()
+    library()
     {
         bookcount = 0;
         string temp;

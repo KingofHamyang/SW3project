@@ -6,8 +6,7 @@
 int main(void)
 {
 
-    library *lb = new library;
-    lb->init();
+    library *lb = new library();
 
-     return 0;
+    return 0;
 }

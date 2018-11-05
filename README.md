@@ -43,3 +43,9 @@ it includes 3 header files and main function
     **return_the_book** method erase th book from the member's borrowing list and check the error message of it and print it
     first, it find the matched resource name. if it doesn't exist, print error
     if it delayed, calculate the `(current_date - borrowed_date)` and restricte him or her.
+
+- 4. how to build?
+  - using the g++ compiler, command is "g++ main.cpp"
+  - if you exacute a.out, and it will make "output.dat"
+
+# I follwe the format in the given example files

@@ -67,7 +67,6 @@ class resource
         return borrowed_date;
     }
 };
-
 class book : public resource
 {
   public:

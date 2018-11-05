@@ -3,7 +3,6 @@
 //#include "resource.h"
 #include "member.h"
 #include <vector>
-
 class library
 {
   public:

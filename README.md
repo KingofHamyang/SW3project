@@ -10,6 +10,7 @@ it includes 3 header files and main function
     this class include borrowed_date, borrowed, due_date member
     constructor of this class set all member as a 0
     and it inlcude setter and getter method for each memeber
+    if_borrow is the getter method of borrowed.
 
 - 2. member.h
 
@@ -17,8 +18,9 @@ it includes 3 header files and main function
     this class include borrowlimit, restruced, restricted_date, and borrowing list in vector form
     constructor of this class set all member as a 0
     and i include setter and getter method for each member
-    is_borrow_this method is to find if this member borrow specific book
-    returning_book method is to erase the book from borrowing list
+    is_borrow_this method is to find if this member borrow specific book.
+    it iterate the borrowings list and find the matced resource name
+    returning_book method is to erase the book from borrowing list.
     borriwng method is to append the book to the borrowing list
 
 - 3. library.h

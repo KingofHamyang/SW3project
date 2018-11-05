@@ -6,6 +6,7 @@
 class library
 {
   public:
+    ofstream of;
     vector<undergraduate> student;
     vector<book> books;
     int bookcount;
@@ -39,6 +40,8 @@ class library
         bookcount = 0;
         string temp;
         fstream fs;
+
+        of.open("output.dat");
         fs.open("resource.dat", std::fstream::in);
         fs >> temp;
         fs >> temp;
@@ -62,9 +65,9 @@ class library
         string operation;
         string membertype;
         string member_name;
-        cout << "Op_#\t"
-             << "Return_code\t"
-             << "Description" << endl;
+        of << "Op_#\t"
+           << "Return_code\t"
+           << "Description" << endl;
 
         if (openFile.is_open())
         {
@@ -80,7 +83,7 @@ class library
                 ss >> operation;
                 ss >> membertype;
                 ss >> member_name;
-                cout << cnt << "\t";
+                of << cnt << "\t";
                 cnt++;
                 if (operation == "B")
                 {
@@ -94,6 +97,7 @@ class library
             }
             openFile.close();
         }
+        of.close();
     }
     void add_new_member(string a)
     {
@@ -190,7 +194,7 @@ class library
         }
         if (flag_Book == 0)
         {
-            cout << "1\tNon exist resource." << endl;
+            of << "1\tNon exist resource." << endl;
             return;
         }
         if (flag_person == 0)
@@ -210,7 +214,7 @@ class library
         }
         if (student[temp_student2].get_borrowing_book_cnt() == 1)
         {
-            cout << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
+            of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
             return;
         }
 
@@ -219,12 +223,12 @@ class library
 
             if (student[temp_student2].is_borrow_this(b))
             {
-                cout << "4\tYou already borrowed this book at" << convert_date(books[temp_book2].get_borrow_date()) << endl;
+                of << "4\tYou already borrowed this book at" << convert_date(books[temp_book2].get_borrow_date()) << endl;
                 return;
             }
             else
             {
-                cout << "5\tOther member already borrowed this book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 13) << endl;
+                of << "5\tOther member already borrowed this book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 13) << endl;
                 return;
             }
         }
@@ -233,7 +237,7 @@ class library
             //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
             if (student[temp_student2].get_restricted_date() >= today_date)
             {
-                cout << "6\tRestricted member until " << convert_date(student[temp_student2].get_restricted_date()) << endl;
+                of << "6\tRestricted member until " << convert_date(student[temp_student2].get_restricted_date()) << endl;
                 return;
             }
         }
@@ -244,7 +248,7 @@ class library
         books[temp_book2].set_borrowed(1);
 
         student[temp_student2].borrowing(&books[temp_book2]);
-        cout << "0\tSuccess." << endl;
+        of << "0\tSuccess." << endl;
     }
     void return_the_book(string b, string p, string date)
     {
@@ -278,7 +282,7 @@ class library
         }
         if (flag_Book == 0)
         {
-            cout << "1\tNon exist resource." << endl;
+            of << "1\tNon exist resource." << endl;
             return;
         }
         if (flag_person == 0)
@@ -298,7 +302,7 @@ class library
         }
         if (student[temp_student2].is_borrow_this(b) == 0)
         {
-            cout << "3\tYou did not borrow this book." << endl;
+            of << "3\tYou did not borrow this book." << endl;
             return;
         }
 
@@ -317,13 +321,13 @@ class library
 
         if (books[temp_book2].get_borrow_date() + 13 < today_date)
         {
-            cout << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13)) << endl;
+            of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13)) << endl;
             student[temp_student2].set_restricted_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13));
             student[temp_student2].set_restricted(1);
         }
         else
         {
-            cout << "0\tSuccess." << endl;
+            of << "0\tSuccess." << endl;
         }
         student[temp_student2].returning_book(b);
         books[temp_book2].set_borrowed(0);

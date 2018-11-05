@@ -3,7 +3,6 @@
 #include <vector>
 #include "resource.h"
 using namespace std;
-
 class member
 {
 private:
@@ -99,7 +98,6 @@ public:
     }
   }
 };
-
 class undergraduate : public member
 {
 public:

@@ -1252,8 +1252,25 @@ class library
             return;
         }
         else
-
-            temp = student[person_index].get_seat();
+        {
+            if (temp->get_is_empty() == false)
+            {
+                if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                {
+                    of << "10\tYou did not borrow this space." << endl;
+                    return;
+                }
+            }
+            else
+            {
+                if (temp->get_leaving_time() != hour2)
+                {
+                    of << "10\tYou did not borrow this space." << endl;
+                    return;
+                }
+            }
+        }
+        temp = student[person_index].get_seat();
         temp->set_is_empty(false);
         of << "0\tSuccess." << endl;
     }

@@ -167,12 +167,14 @@ class library
             ss2.str(line2);
             ss1 >> date1;
             ss2 >> date2;
+            int cntcnt = 0;
             int Bdate = convert_date_to_int(date1);
             int Sdate = convert_date_to_int(date2);
 
-            while (1)
+            while (!(book_flag == 1 && space_flag == 1))
             {
-                cout << Bdate << " " << Sdate << endl;
+                cout << book_flag << " " << space_flag << " " << cntcnt << endl;
+
                 if (book_flag == 0 && space_flag == 0)
                 {
 
@@ -229,7 +231,7 @@ class library
                                 comback_seat(space_id, date2, member_name);
                             }
                         }
-
+                        cntcnt++;
                         if (getline(openFile_space, line2))
                         {
                             stringstream temp(line2);
@@ -266,6 +268,7 @@ class library
                                 return_the_book(resourcename, member_name, date1);
                             }
                         }
+                        cntcnt++;
                         if (getline(openFile, line1))
                         {
 
@@ -303,7 +306,7 @@ class library
                             return_the_book(resourcename, member_name, date1);
                         }
                     }
-
+                    cntcnt++;
                     if (getline(openFile, line1))
                     {
                         stringstream temp(line1);
@@ -368,6 +371,7 @@ class library
                         }
                     }
                     //space get
+                    cntcnt++;
                     if (getline(openFile_space, line2))
                     {
                         stringstream temp(line2);
@@ -382,11 +386,11 @@ class library
                 }
                 else
                 {
+                    openFile.close();
+                    openFile_space.close();
                     break;
                 }
             }
-            openFile.close();
-            openFile_space.close();
         }
         of.close();
     }

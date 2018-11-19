@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include "resource.h"
+#include "space.h"
+
 using namespace std;
 class member
 {
@@ -11,6 +13,8 @@ private:
   int restricted;
   int restricted_date;
   vector<book *> borrowings;
+  seat *borrowing_seat;
+  study_room *borrowing_s_room;
 
 public:
   member()
@@ -97,8 +101,29 @@ public:
       }
     }
   }
+  void set_s_room(study_room *roomtobor)
+  {
+    borrowing_s_room = roomtobor;
+  }
+  void set_seat(seat *roomtobor)
+  {
+    borrowing_seat = roomtobor;
+  }
+  study_room *get_s_room()
+  {
+    return borrowing_s_room;
+  }
+  seat *get_seat()
+  {
+    return borrowing_seat;
+  }
 };
 class undergraduate : public member
 {
 public:
+  undergraduate()
+  {
+    set_s_room(NULL);
+    set_seat(NULL);
+  }
 };

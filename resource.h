@@ -9,6 +9,7 @@ class resource
   private:
     string name;
     string borrowing_person;
+    string borrowing_person_type;
     int borrowed_date;
     int due_date;
     bool borrowed;
@@ -36,6 +37,14 @@ class resource
     string get_borrow_name()
     {
         return borrowing_person;
+    }
+    void set_borrow_person_type(string a)
+    {
+        borrowing_person_type = a;
+    }
+    string get_borrow_person_type()
+    {
+        return borrowing_person_type;
     }
     bool if_borrowed()
     {
@@ -71,4 +80,30 @@ class book : public resource
 {
   public:
     char borrowed_person[20];
+};
+
+class magazine : public resource
+{
+  public:
+    char borrowed_person[20];
+};
+
+class e_book : public resource
+{
+  private:
+    int size;
+
+  public:
+    e_book(int a)
+    {
+        size = a;
+    }
+    int get_size()
+    {
+        return size;
+    }
+    void set_size(int a)
+    {
+        size = a;
+    }
 };

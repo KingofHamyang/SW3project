@@ -9,7 +9,12 @@ class library
   public:
     ofstream of;
     vector<undergraduate> student;
+    vector<faculty> professor;
+    vector<graduate> grad_student;
+    vector<magazine> magazines;
+    vector<e_book> e_books;
     vector<book> books;
+
     study_room *s_room[10];
     int study_room_borrowed[10];
     seat *seat_floor[3][50];
@@ -131,7 +136,42 @@ class library
                 temp_book->setname(temp);
                 books.push_back(*temp_book);
             }
+            else if (temp == "Magazine")
+            {
+                fs >> temp;
+                magazine *temp_magazine;
+                temp_magazine = new magazine();
+                temp_magazine->setname(temp);
+                magazines.push_back(*temp_magazine);
+            }
+            else if (temp == "E-book")
+            {
+
+                fs >> temp;
+                int sizeofthis = 0;
+                int index_;
+                cout << temp << " " << endl;
+                for (int k = 0; k < temp.size(); k++)
+                {
+                    if (temp[k] == '[')
+                    {
+                        index_ = k;
+                        break;
+                    }
+                }
+
+                string sizing = temp.substr(index_ + 1, temp.size() - 2 - index_);
+                cout << sizing << endl;
+                sizeofthis = stoi(sizing);
+                e_book *temp_book;
+                temp_book = new e_book(sizeofthis);
+                temp_book->setname(temp.substr(0, index_));
+                e_books.push_back(*temp_book);
+            }
         }
+        print_book_list();
+        print_e_book_list();
+        print_magazine_list();
         ifstream openFile("input.dat");
         ifstream openFile_space("space.dat");
 
@@ -196,11 +236,11 @@ class library
                             {
                                 ss2 >> number_of_member;
                                 ss2 >> time_to;
-                                borrowing_study_room(space_id, date2, member_name, number_of_member, time_to);
+                                borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
                             }
                             else if (operation == "R")
                             {
-                                return_study_room(space_id, date2, member_name);
+                                return_study_room(space_id, date2, member_name, membertype);
                             }
                         }
                         else if (resourcetype == "Seat")
@@ -216,19 +256,19 @@ class library
                             {
                                 ss2 >> number_of_member;
                                 ss2 >> time_to;
-                                borrowing_seat(space_id, date2, member_name, number_of_member, time_to);
+                                borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
                             }
                             else if (operation == "E")
                             {
-                                emptify_seat(space_id, date2, member_name);
+                                emptify_seat(space_id, date2, member_name, membertype);
                             }
                             else if (operation == "R")
                             {
-                                return_seat(space_id, date2, member_name);
+                                return_seat(space_id, date2, member_name, membertype);
                             }
                             else if (operation == "C")
                             {
-                                comback_seat(space_id, date2, member_name);
+                                comback_seat(space_id, date2, member_name, membertype);
                             }
                         }
                         cntcnt++;
@@ -261,11 +301,62 @@ class library
                             if (operation == "B")
                             {
 
-                                borrowing_book(member_name, resourcename, date1);
+                                borrowing_book(member_name, resourcename, date1, membertype, resourcetype);
                             }
                             else
                             {
-                                return_the_book(resourcename, member_name, date1);
+                                return_the_book(resourcename, member_name, date1, membertype, resourcetype);
+                            }
+                        }
+                        else if (resourcetype == "Magazine")
+                        {
+                            ss1 >> resourcename;
+                            ss1 >> operation;
+                            ss1 >> membertype;
+                            ss1 >> member_name;
+
+                            fs >> temp;
+
+                            int index_;
+                            for (int k = 0; k < resourcename.size(); k++)
+                            {
+                                if (resourcename[k] == '[')
+                                {
+                                    index_ = k;
+                                    break;
+                                }
+                            }
+                            string emitted_date = resourcename.substr(index_, 7);
+
+                            cout << space_id << " " << operation << " " << membertype << " " << member_name << " " << emitted_date << endl;
+                            of << cnt << "\t";
+                            cnt++;
+                            if (operation == "B")
+                            {
+                                borrowing_magazine(member_name, resourcename.substr(0, index_), date1, membertype, resourcetype, emitted_date);
+                            }
+                            else
+                            {
+                                return_the_magazine(resourcename, member_name, date1, membertype, resourcetype);
+                            }
+                        }
+                        else if (resourcetype == "E-book")
+                        {
+                            ss1 >> resourcename;
+                            ss1 >> operation;
+                            ss1 >> membertype;
+                            ss1 >> member_name;
+                            cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
+                            of << cnt << "\t";
+                            cnt++;
+                            if (operation == "B")
+                            {
+
+                                borrowing_E_book(member_name, resourcename, date1, membertype, resourcetype);
+                            }
+                            else
+                            {
+                                return_the_E_book(resourcename, member_name, date1, membertype, resourcetype);
                             }
                         }
                         cntcnt++;
@@ -299,11 +390,63 @@ class library
                         if (operation == "B")
                         {
 
-                            borrowing_book(member_name, resourcename, date1);
+                            borrowing_book(member_name, resourcename, date1, membertype, resourcetype);
                         }
                         else
                         {
-                            return_the_book(resourcename, member_name, date1);
+                            return_the_book(resourcename, member_name, date1, membertype, resourcetype);
+                        }
+                    }
+                    else if (resourcetype == "Magazine")
+                    {
+                        ss1 >> resourcename;
+                        ss1 >> operation;
+                        ss1 >> membertype;
+                        ss1 >> member_name;
+
+                        fs >> temp;
+
+                        int index_;
+                        for (int k = 0; k < resourcename.size(); k++)
+                        {
+                            if (resourcename[k] == '[')
+                            {
+                                index_ = k;
+                                break;
+                            }
+                        }
+                        string emitted_date = resourcename.substr(index_, 7);
+
+                        cout << space_id << " " << operation << " " << membertype << " " << member_name << emitted_date << endl;
+                        of << cnt << "\t";
+                        cnt++;
+                        if (operation == "B")
+                        {
+
+                            borrowing_magazine(member_name, resourcename.substr(0, index_), date1, membertype, resourcetype, emitted_date);
+                        }
+                        else
+                        {
+                            return_the_magazine(resourcename, member_name, date1, membertype, resourcetype);
+                        }
+                    }
+                    else if (resourcetype == "E-book")
+                    {
+                        ss1 >> resourcename;
+                        ss1 >> operation;
+                        ss1 >> membertype;
+                        ss1 >> member_name;
+                        cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
+                        of << cnt << "\t";
+                        cnt++;
+                        if (operation == "B")
+                        {
+
+                            borrowing_E_book(member_name, resourcename, date1, membertype, resourcetype);
+                        }
+                        else
+                        {
+                            return_the_E_book(resourcename, member_name, date1, membertype, resourcetype);
                         }
                     }
                     cntcnt++;
@@ -335,11 +478,11 @@ class library
                         {
                             ss2 >> number_of_member;
                             ss2 >> time_to;
-                            borrowing_study_room(space_id, date2, member_name, number_of_member, time_to);
+                            borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
                         }
                         else if (operation == "R")
                         {
-                            return_study_room(space_id, date2, member_name);
+                            return_study_room(space_id, date2, member_name, membertype);
                         }
                     }
                     else if (resourcetype == "Seat")
@@ -355,19 +498,19 @@ class library
                         {
                             ss2 >> number_of_member;
                             ss2 >> time_to;
-                            borrowing_seat(space_id, date2, member_name, number_of_member, time_to);
+                            borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
                         }
                         else if (operation == "E")
                         {
-                            emptify_seat(space_id, date2, member_name);
+                            emptify_seat(space_id, date2, member_name, membertype);
                         }
                         else if (operation == "R")
                         {
-                            return_seat(space_id, date2, member_name);
+                            return_seat(space_id, date2, member_name, membertype);
                         }
                         else if (operation == "C")
                         {
-                            comback_seat(space_id, date2, member_name);
+                            comback_seat(space_id, date2, member_name, membertype);
                         }
                     }
                     //space get
@@ -394,12 +537,29 @@ class library
         }
         of.close();
     }
-    void add_new_member(string a)
+    void add_new_member(string a, string mem_type)
     {
-        undergraduate *temp;
-        temp = new undergraduate();
-        temp->setname(a);
-        student.push_back(*temp);
+        if (mem_type == "Undergraduate")
+        {
+            undergraduate *temp;
+            temp = new undergraduate();
+            temp->setname(a);
+            student.push_back(*temp);
+        }
+        else if (mem_type == "Graduate")
+        {
+            graduate *temp;
+            temp = new graduate();
+            temp->setname(a);
+            grad_student.push_back(*temp);
+        }
+        else
+        {
+            faculty *temp;
+            temp = new faculty();
+            temp->setname(a);
+            professor.push_back(*temp);
+        }
         return;
     }
     int findbyPersonname(string a)
@@ -419,6 +579,26 @@ class library
         {
             string temp;
             temp = books[i].getname();
+            cout << temp << endl;
+        }
+        return;
+    }
+    void print_e_book_list()
+    {
+        for (int i = 0; i < e_books.size(); i++)
+        {
+            string temp;
+            temp = e_books[i].getname();
+            cout << temp << endl;
+        }
+        return;
+    }
+    void print_magazine_list()
+    {
+        for (int i = 0; i < magazines.size(); i++)
+        {
+            string temp;
+            temp = magazines[i].getname();
             cout << temp << endl;
         }
         return;
@@ -454,191 +634,8 @@ class library
         }
         return;
     }
-    void borrowing_book(string p, string b, string date)
-    {
-        string year;
-        string month;
-        string day;
-        int year2, month2, date2;
-        int today_date;
-        year = date.substr(0, 2);
-        year2 = stoi(year);
-        month = date.substr(3, 2);
-        month2 = stoi(month);
-        day = date.substr(6, 2);
-        date2 = stoi(day);
-        today_date = year2 * 360 + 30 * month2 + date2;
 
-        string temp_book;
-        int temp_book2;
-        int temp_student2;
-        int flag_Book = 0;
-        int flag_person = 0;
-        string temp_student;
-
-        for (int i = 0; i < books.size(); i++)
-        {
-
-            temp_book = books[i].getname();
-            if (temp_book == b)
-            {
-                temp_book2 = i;
-                flag_Book = 1;
-                break;
-            }
-        }
-        for (int i = 0; i < student.size(); i++)
-        {
-
-            temp_student = student[i].getname();
-            if (temp_student == p)
-            {
-                temp_student2 = i;
-                flag_person = 1;
-                break;
-            }
-        }
-        if (flag_Book == 0)
-        {
-            of << "1\tNon exist resource." << endl;
-            return;
-        }
-        if (flag_person == 0)
-        {
-            add_new_member(p);
-            for (int i = 0; i < student.size(); i++)
-            {
-
-                temp_student = student[i].getname();
-                if (temp_student == p)
-                {
-                    temp_student2 = i;
-                    flag_person = 1;
-                    break;
-                }
-            }
-        }
-        if (student[temp_student2].get_borrowing_book_cnt() == 1)
-        {
-            of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
-            return;
-        }
-
-        if (books[temp_book2].if_borrowed() == 1)
-        {
-
-            if (student[temp_student2].is_borrow_this(b))
-            {
-                of << "4\tYou already borrowed this book at" << convert_date(books[temp_book2].get_borrow_date()) << endl;
-                return;
-            }
-            else
-            {
-                of << "5\tOther member already borrowed this book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 13) << endl;
-                return;
-            }
-        }
-        if (student[temp_student2].get_restricted() == 1)
-        {
-            //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
-            if (student[temp_student2].get_restricted_date() >= today_date)
-            {
-                of << "6\tRestricted member until " << convert_date(student[temp_student2].get_restricted_date()) << endl;
-                return;
-            }
-        }
-
-        books[temp_book2].set_borrow_date(date);
-
-        books[temp_book2].set_borrow_name(p);
-        books[temp_book2].set_borrowed(1);
-
-        student[temp_student2].borrowing(&books[temp_book2]);
-        of << "0\tSuccess." << endl;
-    }
-    void return_the_book(string b, string p, string date)
-    {
-        string temp_book;
-        int temp_book2;
-        int temp_student2;
-        int flag_Book = 0;
-        int flag_person = 0;
-        string temp_student;
-        for (int i = 0; i < books.size(); i++)
-        {
-
-            temp_book = books[i].getname();
-            if (temp_book == b)
-            {
-                temp_book2 = i;
-                flag_Book = 1;
-                break;
-            }
-        }
-        for (int i = 0; i < student.size(); i++)
-        {
-
-            temp_student = student[i].getname();
-            if (temp_student == p)
-            {
-                temp_student2 = i;
-                flag_person = 1;
-                break;
-            }
-        }
-        if (flag_Book == 0)
-        {
-            of << "1\tNon exist resource." << endl;
-            return;
-        }
-        if (flag_person == 0)
-        {
-            add_new_member(p);
-            for (int i = 0; i < student.size(); i++)
-            {
-
-                temp_student = student[i].getname();
-                if (temp_student == p)
-                {
-                    temp_student2 = i;
-                    flag_person = 1;
-                    break;
-                }
-            }
-        }
-        if (student[temp_student2].is_borrow_this(b) == 0)
-        {
-            of << "3\tYou did not borrow this book." << endl;
-            return;
-        }
-
-        string year;
-        string month;
-        string day;
-        int year2, month2, date2;
-        int today_date;
-        year = date.substr(0, 2);
-        year2 = stoi(year);
-        month = date.substr(3, 2);
-        month2 = stoi(month);
-        day = date.substr(6, 2);
-        date2 = stoi(day);
-        today_date = year2 * 360 + 30 * month2 + date2;
-
-        if (books[temp_book2].get_borrow_date() + 13 < today_date)
-        {
-            of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13)) << endl;
-            student[temp_student2].set_restricted_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13));
-            student[temp_student2].set_restricted(1);
-        }
-        else
-        {
-            of << "0\tSuccess." << endl;
-        }
-        student[temp_student2].returning_book(b);
-        books[temp_book2].set_borrowed(0);
-    }
-    void borrowing_study_room(int space_number, string date, string person, string n_of_member, string time2borrow)
+    void borrowing_study_room(int space_number, string date, string person, string n_of_member, string time2borrow, string member_type)
     {
         int person_index;
         int person_exist_flag = 0;
@@ -673,7 +670,7 @@ class library
         }
         if (person_exist_flag == 0)
         {
-            add_new_member(person);
+            add_new_member(person, member_type);
             for (int i = 0; i < student.size(); i++)
             {
 
@@ -744,7 +741,7 @@ class library
         student[person_index].set_s_room(s_room[space_number - 1]);
         of << "0\tSuccess." << endl;
     }
-    void return_study_room(int space_number, string date, string person)
+    void return_study_room(int space_number, string date, string person, string member_type)
     {
         int person_index;
         int person_exist_flag = 0;
@@ -777,7 +774,7 @@ class library
         }
         if (person_exist_flag == 0)
         {
-            add_new_member(person);
+            add_new_member(person, member_type);
             for (int i = 0; i < student.size(); i++)
             {
 
@@ -845,7 +842,7 @@ class library
                 return true;
         }
     }
-    void borrowing_seat(int space_number, string date, string person, string n_of_member, string time2borrow)
+    void borrowing_seat(int space_number, string date, string person, string n_of_member, string time2borrow, string member_type)
     {
         int person_index;
         int person_exist_flag = 0;
@@ -879,7 +876,7 @@ class library
         }
         if (person_exist_flag == 0)
         {
-            add_new_member(person);
+            add_new_member(person, member_type);
             for (int i = 0; i < student.size(); i++)
             {
 
@@ -1020,7 +1017,7 @@ class library
         of << "0\tSuccess." << endl;
     }
 
-    void return_seat(int space_number, string date, string person)
+    void return_seat(int space_number, string date, string person, string member_type)
     {
         int person_index;
         int person_exist_flag = 0;
@@ -1054,7 +1051,7 @@ class library
         }
         if (person_exist_flag == 0)
         {
-            add_new_member(person);
+            add_new_member(person, member_type);
             for (int i = 0; i < student.size(); i++)
             {
 
@@ -1116,7 +1113,7 @@ class library
         seat_check[space_number - 1]--;
         of << "0\tSuccess." << endl;
     }
-    void emptify_seat(int space_number, string date, string person)
+    void emptify_seat(int space_number, string date, string person, string member_type)
     {
         int person_index;
         int person_exist_flag = 0;
@@ -1149,7 +1146,7 @@ class library
         }
         if (person_exist_flag == 0)
         {
-            add_new_member(person);
+            add_new_member(person, member_type);
             for (int i = 0; i < student.size(); i++)
             {
 
@@ -1198,7 +1195,14 @@ class library
         temp->set_leaving_time(hour2);
         of << "0\tSuccess." << endl;
     }
-    void comback_seat(int space_number, string date, string person)
+    void add_new_magazine(string magazine_name)
+    {
+        magazine *temp = new magazine();
+        temp->setname(magazine_name);
+        magazines.push_back(*temp);
+        return;
+    }
+    void comback_seat(int space_number, string date, string person, string member_type)
     {
         int person_index;
         int person_exist_flag = 0;
@@ -1231,7 +1235,7 @@ class library
         }
         if (person_exist_flag == 0)
         {
-            add_new_member(person);
+            add_new_member(person, member_type);
             for (int i = 0; i < student.size(); i++)
             {
 
@@ -1277,5 +1281,1470 @@ class library
         temp = student[person_index].get_seat();
         temp->set_is_empty(false);
         of << "0\tSuccess." << endl;
+    }
+
+    void borrowing_magazine(string p, string b, string date, string memeber_type, string book_type, string emitted_date)
+    {
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        string real_magazine_name = b + emitted_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+
+        int magazine_date;
+        string y_m;
+        string m_m;
+        y_m = emitted_date.substr(1, 2);
+        m_m = emitted_date.substr(4, 2);
+
+        int y_m2 = stoi(y_m);
+        int m_m2 = stoi(m_m);
+        magazine_date = y_m2 * 360 + m_m2 * 30;
+        string temp_book;
+        int temp_book2;
+        int temp_student2;
+        int flag_Book = 0;
+        int flag_person = 0;
+        string temp_student;
+
+        cout << "asdfasfasdf" << b << " " << real_magazine_name << " " << emitted_date << " " << endl;
+
+        for (int i = 0; i < magazines.size(); i++)
+        {
+
+            temp_book = magazines[i].getname();
+            cout << temp_book << " " << endl;
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            for (int i = 0; i < student.size(); i++)
+            {
+
+                temp_student = student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+
+                temp_student = grad_student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+
+                temp_student = professor[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        if (flag_Book == 0)
+        {
+            of << "1\tNon exist resource." << endl;
+            return;
+        }
+        else
+        {
+            if (!(today_date - magazine_date <= 360 && today_date - magazine_date >= 0))
+            {
+                of << "1\tNon exist resource." << endl;
+                return;
+            }
+        }
+        flag_Book = 0;
+        for (int i = 0; i < magazines.size(); i++)
+        {
+
+            temp_book = magazines[i].getname();
+            //cout << temp_book << " " << endl;
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (flag_Book == 0)
+        {
+            add_new_magazine(real_magazine_name);
+            for (int i = 0; i < magazines.size(); i++)
+            {
+
+                temp_book = magazines[i].getname();
+                //cout << temp_book << " " << endl;
+                if (temp_book == b)
+                {
+                    temp_book2 = i;
+                    flag_Book = 1;
+                    break;
+                }
+            }
+        }
+
+        if (flag_person == 0)
+        {
+            add_new_member(p, memeber_type);
+            if (memeber_type == "Undergraduate")
+            {
+                for (int i = 0; i < student.size(); i++)
+                {
+
+                    temp_student = student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (memeber_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+
+                    temp_student = grad_student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+
+                    temp_student = professor[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_borrowing_magazine_cnt() == 1)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_borrowing_magazine_cnt() == 5)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 2 << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_borrowing_magazine_cnt() == 10)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 3 << endl;
+                return;
+            }
+        }
+
+        if (magazines[temp_book2].if_borrowed() == 1)
+        {
+            if (memeber_type == "Undergraduate")
+            {
+                if (student[temp_student2].is_borrow_this_magazine(b))
+                {
+                    of << "4\tYou already borrowed this magazine at" << convert_date(magazines[temp_book2].get_borrow_date()) << endl;
+                    return;
+                }
+                else
+                {
+                    if (magazines[temp_book2].get_borrow_person_type() == "Undergraduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 13) << endl;
+                    else if (magazines[temp_book2].get_borrow_person_type() == "Graduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 29) << endl;
+                    else if (magazines[temp_book2].get_borrow_person_type() == "Faculty")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 29) << endl;
+                    return;
+                }
+            }
+            else if (memeber_type == "Graduate")
+            {
+                if (grad_student[temp_student2].is_borrow_this_magazine(b))
+                {
+                    of << "4\tYou already borrowed this magazine at" << convert_date(magazines[temp_book2].get_borrow_date()) << endl;
+                    return;
+                }
+                else
+                {
+                    if (magazines[temp_book2].get_borrow_person_type() == "Undergraduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 13) << endl;
+                    else if (magazines[temp_book2].get_borrow_person_type() == "Graduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 29) << endl;
+                    else if (magazines[temp_book2].get_borrow_person_type() == "Faculty")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 29) << endl;
+                    return;
+                }
+            }
+            else if (memeber_type == "Faculty")
+            {
+                if (professor[temp_student2].is_borrow_this_magazine(b))
+                {
+                    of << "4\tYou already borrowed this magazine at" << convert_date(magazines[temp_book2].get_borrow_date()) << endl;
+                    return;
+                }
+                else
+                {
+                    if (magazines[temp_book2].get_borrow_person_type() == "Undergraduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 13) << endl;
+                    else if (magazines[temp_book2].get_borrow_person_type() == "Graduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 29) << endl;
+                    else if (magazines[temp_book2].get_borrow_person_type() == "Faculty")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(magazines[temp_book2].get_borrow_date() + 29) << endl;
+                    return;
+                }
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (student[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(student[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (grad_student[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(grad_student[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (professor[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(professor[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+
+        magazines[temp_book2].set_borrow_date(date);
+
+        magazines[temp_book2].set_borrow_name(p);
+        magazines[temp_book2].set_borrowed(1);
+        if (memeber_type == "Undergraduate")
+        {
+            student[temp_student2].borrowing_magazines(&magazines[temp_book2]);
+            magazines[temp_book2].set_borrow_person_type("Undergraduate");
+        }
+        else if (memeber_type == "Graduate")
+        {
+            grad_student[temp_student2].borrowing_magazines(&magazines[temp_book2]);
+            magazines[temp_book2].set_borrow_person_type("Graduate");
+        }
+        else
+        {
+            professor[temp_student2].borrowing_magazines(&magazines[temp_book2]);
+            magazines[temp_book2].set_borrow_person_type("Faculty");
+        }
+        of << "0\tSuccess." << endl;
+    }
+    void borrowing_E_book(string p, string b, string date, string memeber_type, string book_type)
+    {
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+
+        string temp_book;
+        int temp_book2;
+        int temp_student2;
+        int flag_Book = 0;
+        int flag_person = 0;
+        string temp_student;
+
+        for (int i = 0; i < e_books.size(); i++)
+        {
+
+            temp_book = e_books[i].getname();
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            for (int i = 0; i < student.size(); i++)
+            {
+
+                temp_student = student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+
+                temp_student = grad_student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+
+                temp_student = professor[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        if (flag_Book == 0)
+        {
+            of << "1\tNon exist resource." << endl;
+            return;
+        }
+        if (flag_person == 0)
+        {
+            add_new_member(p, memeber_type);
+            if (memeber_type == "Undergraduate")
+            {
+                for (int i = 0; i < student.size(); i++)
+                {
+
+                    temp_student = student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (memeber_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+
+                    temp_student = grad_student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+
+                    temp_student = professor[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            student[temp_student2].expiring_e_book(today_date, b, memeber_type);
+        }
+        else if (memeber_type == "Graduate")
+        {
+            grad_student[temp_student2].expiring_e_book(today_date, b, memeber_type);
+        }
+        else if (memeber_type == "Faculty")
+        {
+            professor[temp_student2].expiring_e_book(today_date, b, memeber_type);
+        }
+        /* if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_borrowing_e_book_cnt() == 1)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_borrowing_e_book_cnt() == 5)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 5 << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_borrowing_e_book_cnt() == 10)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 10 << endl;
+                return;
+            }
+        }*/
+
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].is_borrow_this_e_book(b))
+            {
+                of << "4\tYou already borrowed this e-book at" << convert_date(student[temp_student2].get_borrow_e_book_date(b)) << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].is_borrow_this_e_book(b))
+            {
+                of << "4\tYou already borrowed this e-book at" << convert_date(grad_student[temp_student2].get_borrow_e_book_date(b)) << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].is_borrow_this_e_book(b))
+            {
+                of << "4\tYou already borrowed this e-book at" << convert_date(professor[temp_student2].get_borrow_e_book_date(b)) << endl;
+                return;
+            }
+        }
+
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (student[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(student[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (grad_student[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(grad_student[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (professor[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(professor[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_storage() + e_books[temp_book2].get_size() > 100)
+            {
+                of << "15\tExceeds your storage capacity." << endl;
+                return;
+            }
+            else
+            {
+                int size_ = student[temp_student2].get_storage() + e_books[temp_book2].get_size();
+                student[temp_student2].set_storage(size_);
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_storage() + e_books[temp_book2].get_size() > 500)
+            {
+                of << "15\tExceeds your storage capacity." << endl;
+                return;
+            }
+            else
+            {
+                int size_ = grad_student[temp_student2].get_storage() + e_books[temp_book2].get_size();
+                grad_student[temp_student2].set_storage(size_);
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_storage() + e_books[temp_book2].get_size() > 1000)
+            {
+                of << "15\tExceeds your storage capacity." << endl;
+                return;
+            }
+            else
+            {
+                int size_ = professor[temp_student2].get_storage() + e_books[temp_book2].get_size();
+                professor[temp_student2].set_storage(size_);
+            }
+        }
+
+        if (memeber_type == "Undergraduate")
+        {
+            student[temp_student2].borrowing_e_books(&e_books[temp_book2], today_date);
+        }
+        else if (memeber_type == "Graduate")
+        {
+            grad_student[temp_student2].borrowing_e_books(&e_books[temp_book2], today_date);
+        }
+        else if (memeber_type == "Faculty")
+        {
+            professor[temp_student2].borrowing_e_books(&e_books[temp_book2], today_date);
+        }
+        of << "0\tSuccess." << endl;
+    }
+
+    void borrowing_book(string p, string b, string date, string memeber_type, string book_type)
+    {
+        cout << memeber_type << endl;
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+
+        string temp_book;
+        int temp_book2;
+        int temp_student2;
+        int flag_Book = 0;
+        int flag_person = 0;
+        string temp_student;
+
+        for (int i = 0; i < books.size(); i++)
+        {
+
+            temp_book = books[i].getname();
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            for (int i = 0; i < student.size(); i++)
+            {
+
+                temp_student = student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+
+                temp_student = grad_student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+
+                temp_student = professor[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        if (flag_Book == 0)
+        {
+            of << "1\tNon exist resource." << endl;
+            return;
+        }
+        if (flag_person == 0)
+        {
+            add_new_member(p, memeber_type);
+            if (memeber_type == "Undergraduate")
+            {
+                for (int i = 0; i < student.size(); i++)
+                {
+
+                    temp_student = student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (memeber_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+
+                    temp_student = grad_student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+
+                    temp_student = professor[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_borrowing_book_cnt() == 1)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_borrowing_book_cnt() == 5)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 5 << endl;
+                return;
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_borrowing_book_cnt() == 10)
+            {
+                of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 10 << endl;
+                return;
+            }
+        }
+
+        if (books[temp_book2].if_borrowed() == 1)
+        {
+            if (memeber_type == "Undergraduate")
+            {
+                if (student[temp_student2].is_borrow_this(b))
+                {
+                    of << "4\tYou already borrowed this magazine at" << convert_date(books[temp_book2].get_borrow_date()) << endl;
+                    return;
+                }
+                else
+                {
+                    if (books[temp_book2].get_borrow_person_type() == "Undergraduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 13) << endl;
+                    else if (books[temp_book2].get_borrow_person_type() == "Graduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 29) << endl;
+                    else if (books[temp_book2].get_borrow_person_type() == "Faculty")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 29) << endl;
+                    return;
+                }
+            }
+            else if (memeber_type == "Graduate")
+            {
+                if (grad_student[temp_student2].is_borrow_this(b))
+                {
+                    of << "4\tYou already borrowed this magazine at" << convert_date(books[temp_book2].get_borrow_date()) << endl;
+                    return;
+                }
+                else
+                {
+                    if (books[temp_book2].get_borrow_person_type() == "Undergraduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 13) << endl;
+                    else if (books[temp_book2].get_borrow_person_type() == "Graduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 29) << endl;
+                    else if (books[temp_book2].get_borrow_person_type() == "Faculty")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 29) << endl;
+                    return;
+                }
+            }
+            else if (memeber_type == "Faculty")
+            {
+                if (professor[temp_student2].is_borrow_this(b))
+                {
+                    of << "4\tYou already borrowed this magazine at" << convert_date(books[temp_book2].get_borrow_date()) << endl;
+                    return;
+                }
+                else
+                {
+                    if (books[temp_book2].get_borrow_person_type() == "Undergraduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 13) << endl;
+                    else if (books[temp_book2].get_borrow_person_type() == "Graduate")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 29) << endl;
+                    else if (books[temp_book2].get_borrow_person_type() == "Faculty")
+                        of << "5\tOther member already borrowed magazine book. This book will be returned at " << convert_date(books[temp_book2].get_borrow_date() + 29) << endl;
+                    return;
+                }
+            }
+        }
+        if (memeber_type == "Undergraduate")
+        {
+            if (student[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (student[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(student[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        else if (memeber_type == "Graduate")
+        {
+            if (grad_student[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (grad_student[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(grad_student[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+        else if (memeber_type == "Faculty")
+        {
+            if (professor[temp_student2].get_restricted() == 1)
+            {
+                //cout << "sdfsaf " << today_date << " " << student[temp_student2].get_restricted_date() << endl;
+                if (professor[temp_student2].get_restricted_date() >= today_date)
+                {
+                    of << "6\tRestricted member until " << convert_date(professor[temp_student2].get_restricted_date()) << endl;
+                    return;
+                }
+            }
+        }
+
+        books[temp_book2].set_borrow_date(date);
+
+        books[temp_book2].set_borrow_name(p);
+        books[temp_book2].set_borrowed(1);
+        if (memeber_type == "Undergraduate")
+        {
+            student[temp_student2].borrowing(&books[temp_book2]);
+            books[temp_book2].set_borrow_person_type("Undergraduate");
+        }
+        else if (memeber_type == "Graduate")
+        {
+            grad_student[temp_student2].borrowing(&books[temp_book2]);
+            books[temp_book2].set_borrow_person_type("Graduate");
+        }
+        else
+        {
+            professor[temp_student2].borrowing(&books[temp_book2]);
+            books[temp_book2].set_borrow_person_type("Faculty");
+        }
+        of << "0\tSuccess." << endl;
+    }
+
+    void return_the_E_book(string b, string p, string date, string member_type, string book_type)
+    {
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+
+        string temp_book;
+        int temp_book2;
+        int temp_student2;
+        int flag_Book = 0;
+        int flag_person = 0;
+        string temp_student;
+        for (int i = 0; i < e_books.size(); i++)
+        {
+
+            temp_book = e_books[i].getname();
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            for (int i = 0; i < student.size(); i++)
+            {
+
+                temp_student = student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+
+                temp_student = grad_student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+
+                temp_student = professor[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        if (flag_Book == 0)
+        {
+            of << "1\tNon exist resource." << endl;
+            return;
+        }
+        if (flag_person == 0)
+        {
+            add_new_member(p, member_type);
+            if (member_type == "Undergraduate")
+            {
+                for (int i = 0; i < student.size(); i++)
+                {
+
+                    temp_student = student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+
+                    temp_student = grad_student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+
+                    temp_student = professor[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (member_type == "Undergraduate")
+        {
+
+            student[temp_student2].expiring_e_book(today_date, b, member_type);
+        }
+        else if (member_type == "Graduate")
+        {
+            grad_student[temp_student2].expiring_e_book(today_date, b, member_type);
+        }
+        else if (member_type == "Faculty")
+        {
+            professor[temp_student2].expiring_e_book(today_date, b, member_type);
+        }
+
+        if (member_type == "Undergraduate")
+        {
+            if (student[temp_student2].is_borrow_this_e_book(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            if (grad_student[temp_student2].is_borrow_this_e_book(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            if (professor[temp_student2].is_borrow_this_e_book(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+
+        if (member_type == "Undergraduate")
+        {
+
+            of << "0\tSuccess." << endl;
+        }
+        else if (member_type == "Graduate")
+        {
+
+            of << "0\tSuccess." << endl;
+        }
+        else if (member_type == "Faculty")
+        {
+
+            of << "0\tSuccess." << endl;
+        }
+        if (member_type == "Undergraduate")
+        {
+            student[temp_student2].returning_e_book(b);
+        }
+        else if (member_type == "Graduate")
+        {
+            grad_student[temp_student2].returning_e_book(b);
+        }
+        else if (member_type == "Faculty")
+        {
+            professor[temp_student2].returning_e_book(b);
+        }
+    }
+
+    void return_the_magazine(string b, string p, string date, string member_type, string book_type)
+    {
+        string temp_book;
+        int temp_book2;
+        int temp_student2;
+        int flag_Book = 0;
+        int flag_person = 0;
+        string temp_student;
+        for (int i = 0; i < magazines.size(); i++)
+        {
+
+            temp_book = magazines[i].getname();
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            for (int i = 0; i < student.size(); i++)
+            {
+
+                temp_student = student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+
+                temp_student = grad_student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+
+                temp_student = professor[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        if (flag_Book == 0)
+        {
+            of << "1\tNon exist resource." << endl;
+            return;
+        }
+        if (flag_person == 0)
+        {
+            add_new_member(p, member_type);
+            if (member_type == "Undergraduate")
+            {
+                for (int i = 0; i < student.size(); i++)
+                {
+
+                    temp_student = student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+
+                    temp_student = grad_student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+
+                    temp_student = professor[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (member_type == "Undergraduate")
+        {
+            if (student[temp_student2].is_borrow_this_magazine(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            if (grad_student[temp_student2].is_borrow_this_magazine(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            if (professor[temp_student2].is_borrow_this_magazine(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+        if (member_type == "Undergraduate")
+        {
+            if (magazines[temp_book2].get_borrow_date() + 13 < today_date)
+            {
+                of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (magazines[temp_book2].get_borrow_date() + 13)) << endl;
+                student[temp_student2].set_restricted_date(2 * today_date - (magazines[temp_book2].get_borrow_date() + 13));
+                student[temp_student2].set_restricted(1);
+            }
+            else
+            {
+                of << "0\tSuccess." << endl;
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            if (magazines[temp_book2].get_borrow_date() + 29 < today_date)
+            {
+                of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (magazines[temp_book2].get_borrow_date() + 29)) << endl;
+                grad_student[temp_student2].set_restricted_date(2 * today_date - (magazines[temp_book2].get_borrow_date() + 29));
+                grad_student[temp_student2].set_restricted(1);
+            }
+            else
+            {
+                of << "0\tSuccess." << endl;
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            if (magazines[temp_book2].get_borrow_date() + 29 < today_date)
+            {
+                of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (magazines[temp_book2].get_borrow_date() + 29)) << endl;
+                professor[temp_student2].set_restricted_date(2 * today_date - (magazines[temp_book2].get_borrow_date() + 29));
+                professor[temp_student2].set_restricted(1);
+            }
+            else
+            {
+                of << "0\tSuccess." << endl;
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            student[temp_student2].returning_magazine(b);
+        }
+        else if (member_type == "Graduate")
+        {
+            grad_student[temp_student2].returning_magazine(b);
+        }
+        else if (member_type == "Faculty")
+        {
+            professor[temp_student2].returning_magazine(b);
+        }
+        magazines[temp_book2].set_borrowed(0);
+    }
+    void return_the_book(string b, string p, string date, string member_type, string book_type)
+    {
+        string temp_book;
+        int temp_book2;
+        int temp_student2;
+        int flag_Book = 0;
+        int flag_person = 0;
+        string temp_student;
+        for (int i = 0; i < books.size(); i++)
+        {
+
+            temp_book = books[i].getname();
+            if (temp_book == b)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            for (int i = 0; i < student.size(); i++)
+            {
+
+                temp_student = student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+
+                temp_student = grad_student[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+
+                temp_student = professor[i].getname();
+                if (temp_student == p)
+                {
+                    temp_student2 = i;
+                    flag_person = 1;
+                    break;
+                }
+            }
+        }
+        if (flag_Book == 0)
+        {
+            of << "1\tNon exist resource." << endl;
+            return;
+        }
+        if (flag_person == 0)
+        {
+            add_new_member(p, member_type);
+            if (member_type == "Undergraduate")
+            {
+                for (int i = 0; i < student.size(); i++)
+                {
+
+                    temp_student = student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+
+                    temp_student = grad_student[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+
+                    temp_student = professor[i].getname();
+                    if (temp_student == p)
+                    {
+                        temp_student2 = i;
+                        flag_person = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (member_type == "Undergraduate")
+        {
+            if (student[temp_student2].is_borrow_this(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            if (grad_student[temp_student2].is_borrow_this(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            if (professor[temp_student2].is_borrow_this(b) == 0)
+            {
+                of << "3\tYou did not borrow this book." << endl;
+                return;
+            }
+        }
+
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+        if (member_type == "Undergraduate")
+        {
+            if (books[temp_book2].get_borrow_date() + 13 < today_date)
+            {
+                of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13)) << endl;
+                student[temp_student2].set_restricted_date(2 * today_date - (books[temp_book2].get_borrow_date() + 13));
+                student[temp_student2].set_restricted(1);
+            }
+            else
+            {
+                of << "0\tSuccess." << endl;
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            if (books[temp_book2].get_borrow_date() + 29 < today_date)
+            {
+                of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (books[temp_book2].get_borrow_date() + 29)) << endl;
+                grad_student[temp_student2].set_restricted_date(2 * today_date - (books[temp_book2].get_borrow_date() + 29));
+                grad_student[temp_student2].set_restricted(1);
+            }
+            else
+            {
+                of << "0\tSuccess." << endl;
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            if (books[temp_book2].get_borrow_date() + 29 < today_date)
+            {
+                of << "7\tDelayed return. You'll be restricted until " << convert_date(2 * today_date - (books[temp_book2].get_borrow_date() + 29)) << endl;
+                professor[temp_student2].set_restricted_date(2 * today_date - (books[temp_book2].get_borrow_date() + 29));
+                professor[temp_student2].set_restricted(1);
+            }
+            else
+            {
+                of << "0\tSuccess." << endl;
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            student[temp_student2].returning_book(b);
+        }
+        else if (member_type == "Graduate")
+        {
+            grad_student[temp_student2].returning_book(b);
+        }
+        else if (member_type == "Faculty")
+        {
+            professor[temp_student2].returning_book(b);
+        }
+        books[temp_book2].set_borrowed(0);
     }
 };

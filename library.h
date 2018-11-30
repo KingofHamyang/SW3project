@@ -865,26 +865,79 @@ class library
         hour2 = stoi(hour);
         today_date = year2 * 360 + 30 * month2 + date2;
         today_hour = hour2;
-        for (int i = 0; i < student.size(); i++)
+        if (member_type == "Undergraduate")
         {
-            if (person == student[i].getname())
+            for (int i = 0; i < student.size(); i++)
             {
-                person_index = i;
-                person_exist_flag = 1;
-                break;
+                if (person == student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+                if (person == grad_student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+                if (person == professor[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
             }
         }
         if (person_exist_flag == 0)
         {
             add_new_member(person, member_type);
-            for (int i = 0; i < student.size(); i++)
+            if (member_type == "Undergraduate")
             {
-
-                if (student[i].getname() == person)
+                for (int i = 0; i < student.size(); i++)
                 {
-                    person_index = i;
-                    person_exist_flag = 1;
-                    break;
+                    if (person == student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+                    if (person == grad_student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+                    if (person == professor[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
                 }
             }
         }
@@ -925,25 +978,75 @@ class library
                 time_to_bor = 24 - (hour2);
             }
         }
-
-        seat *temp = student[person_index].get_seat();
-        if (temp != NULL)
+        if (member_type == "Undergraduate")
         {
-            if (temp->get_is_empty() == false)
+            seat *temp = student[person_index].get_seat();
+            if (temp != NULL)
             {
-                if (temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2)
+                if (temp->get_is_empty() == false)
                 {
+                    if (temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2)
+                    {
 
-                    of << "11\tYou already borrowed this kind of space." << endl;
-                    return;
+                        of << "11\tYou already borrowed this kind of space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() == hour2)
+                    {
+                        of << "11\tYou already borrowed this kind of space." << endl;
+                        return;
+                    }
                 }
             }
-            else
+        }
+        else if (member_type == "Graduate")
+        {
+            seat *temp = grad_student[person_index].get_seat();
+            if (temp != NULL)
             {
-                if (temp->get_leaving_time() == hour2)
+                if (temp->get_is_empty() == false)
                 {
-                    of << "11\tYou already borrowed this kind of space." << endl;
-                    return;
+                    if (temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2)
+                    {
+
+                        of << "11\tYou already borrowed this kind of space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() == hour2)
+                    {
+                        of << "11\tYou already borrowed this kind of space." << endl;
+                        return;
+                    }
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            seat *temp = professor[person_index].get_seat();
+            if (temp != NULL)
+            {
+                if (temp->get_is_empty() == false)
+                {
+                    if (temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2)
+                    {
+
+                        of << "11\tYou already borrowed this kind of space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() == hour2)
+                    {
+                        of << "11\tYou already borrowed this kind of space." << endl;
+                        return;
+                    }
                 }
             }
         }
@@ -973,11 +1076,34 @@ class library
                     flag = 1;
 
                     seat_to_desig = i;
-                    for (int j = 0; j < student.size(); j++)
+                    if (member_type == "Undergraduate")
                     {
-                        if (student[i].getname() == seat_floor[space_number - 1][seat_to_desig]->get_borrowing_person())
+                        for (int j = 0; j < student.size(); j++)
                         {
-                            student[i].set_seat(NULL);
+                            if (student[i].getname() == seat_floor[space_number - 1][seat_to_desig]->get_borrowing_person())
+                            {
+                                student[i].set_seat(NULL);
+                            }
+                        }
+                    }
+                    else if (member_type == "Graduate")
+                    {
+                        for (int j = 0; j < grad_student.size(); j++)
+                        {
+                            if (grad_student[i].getname() == seat_floor[space_number - 1][seat_to_desig]->get_borrowing_person())
+                            {
+                                grad_student[i].set_seat(NULL);
+                            }
+                        }
+                    }
+                    else if (member_type == "Faculty")
+                    {
+                        for (int j = 0; j < professor.size(); j++)
+                        {
+                            if (professor[i].getname() == seat_floor[space_number - 1][seat_to_desig]->get_borrowing_person())
+                            {
+                                professor[i].set_seat(NULL);
+                            }
                         }
                     }
                     break;
@@ -1007,13 +1133,25 @@ class library
 
         seat_floor[space_number - 1][seat_to_desig]->set_borrowed_date(today_date);
         seat_floor[space_number - 1][seat_to_desig]->set_borrowing_person(person);
+        seat_floor[space_number - 1][seat_to_desig]->set_borrowing_person_type(member_type);
         seat_floor[space_number - 1][seat_to_desig]->set_have_to_return_time(hour2 + time_to_bor);
         seat_floor[space_number - 1][seat_to_desig]->set_is_empty(false);
         seat_floor[space_number - 1][seat_to_desig]->set_is_borrowed(true);
         seat_floor[space_number - 1][seat_to_desig]->set_leaving_time(0);
         seat_floor[space_number - 1][seat_to_desig]->set_borrowed_time(hour2);
 
-        student[person_index].set_seat(seat_floor[space_number - 1][seat_to_desig]);
+        if (member_type == "Undergraduate")
+        {
+            student[person_index].set_seat(seat_floor[space_number - 1][seat_to_desig]);
+        }
+        else if (member_type == "Graduate")
+        {
+            grad_student[person_index].set_seat(seat_floor[space_number - 1][seat_to_desig]);
+        }
+        else if (member_type == "Faculty")
+        {
+            professor[person_index].set_seat(seat_floor[space_number - 1][seat_to_desig]);
+        }
         of << "0\tSuccess." << endl;
     }
 
@@ -1040,26 +1178,79 @@ class library
         today_date = year2 * 360 + 30 * month2 + date2;
         today_hour = hour2;
         //cout << year2 << month2 << date2 << hour2 << endl;
-        for (int i = 0; i < student.size(); i++)
+        if (member_type == "Undergraduate")
         {
-            if (person == student[i].getname())
+            for (int i = 0; i < student.size(); i++)
             {
-                person_index = i;
-                person_exist_flag = 1;
-                break;
+                if (person == student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+                if (person == grad_student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+                if (person == professor[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
             }
         }
         if (person_exist_flag == 0)
         {
             add_new_member(person, member_type);
-            for (int i = 0; i < student.size(); i++)
+            if (member_type == "Undergraduate")
             {
-
-                if (student[i].getname() == person)
+                for (int i = 0; i < student.size(); i++)
                 {
-                    person_index = i;
-                    person_exist_flag = 1;
-                    break;
+                    if (person == student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+                    if (person == grad_student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+                    if (person == professor[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
                 }
             }
         }
@@ -1068,17 +1259,41 @@ class library
             of << "8\tInvalid space id." << endl;
             return;
         }
-        seat *temp = student[person_index].get_seat();
-        if (temp == NULL)
+
+        seat *temp;
+        if (member_type == "Undergraduate")
         {
-            of << "10\tYou did not borrow this space1." << endl;
-            return;
+            temp = student[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space1." << endl;
+                return;
+            }
         }
+        else if (member_type == "Graduate")
+        {
+            temp = grad_student[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space1." << endl;
+                return;
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            temp = professor[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space1." << endl;
+                return;
+            }
+        }
+
         int flag_person = 0;
         int flag_expire = 0;
         for (int i = 0; i < 50; i++)
         {
-            if (seat_floor[space_number - 1][i]->get_borrowing_person() == person)
+            if (seat_floor[space_number - 1][i]->get_borrowing_person() == person && seat_floor[space_number - 1][i]->get_borrowing_person_type() == member_type)
             {
                 if (seat_floor[space_number - 1][i]->get_is_empty() == false)
                 {
@@ -1103,11 +1318,22 @@ class library
             of << "10\tYou did not borrow this space." << endl;
             return;
         }
-
-        student[person_index].set_seat(NULL);
+        if (member_type == "Undergraduate")
+        {
+            student[person_index].set_seat(NULL);
+        }
+        else if (member_type == "Graduate")
+        {
+            grad_student[person_index].set_seat(NULL);
+        }
+        else if (member_type == "Faculty")
+        {
+            professor[person_index].set_seat(NULL);
+        }
 
         temp->set_is_borrowed(false);
         temp->set_borrowing_person("");
+        temp->set_borrowing_person_type("");
         temp->set_is_empty(false);
 
         seat_check[space_number - 1]--;
@@ -1135,26 +1361,79 @@ class library
         hour2 = stoi(hour);
         today_date = year2 * 360 + 30 * month2 + date2;
         today_hour = hour2;
-        for (int i = 0; i < student.size(); i++)
+        if (member_type == "Undergraduate")
         {
-            if (person == student[i].getname())
+            for (int i = 0; i < student.size(); i++)
             {
-                person_index = i;
-                person_exist_flag = 1;
-                break;
+                if (person == student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+                if (person == grad_student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+                if (person == professor[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
             }
         }
         if (person_exist_flag == 0)
         {
             add_new_member(person, member_type);
-            for (int i = 0; i < student.size(); i++)
+            if (member_type == "Undergraduate")
             {
-
-                if (student[i].getname() == person)
+                for (int i = 0; i < student.size(); i++)
                 {
-                    person_index = i;
-                    person_exist_flag = 1;
-                    break;
+                    if (person == student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+                    if (person == grad_student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+                    if (person == professor[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
                 }
             }
         }
@@ -1164,33 +1443,103 @@ class library
             of << "8\tInvalid space id." << endl;
             return;
         }
-        seat *temp = student[person_index].get_seat();
-        if (temp == NULL)
+        seat *temp;
+        if (member_type == "Undergraduate")
         {
-            of << "10\tYou did not borrow this space." << endl;
-            return;
-        }
-        else
-        {
-            if (temp->get_is_empty() == false)
+            temp = student[person_index].get_seat();
+            if (temp == NULL)
             {
-                if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
-                {
-                    of << "10\tYou did not borrow this space." << endl;
-                    return;
-                }
+                of << "10\tYou did not borrow this space." << endl;
+                return;
             }
             else
             {
-                if (temp->get_leaving_time() != hour2)
+                if (temp->get_is_empty() == false)
                 {
-                    of << "10\tYou did not borrow this space." << endl;
-                    return;
+                    if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() != hour2)
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
                 }
             }
         }
-
-        temp = student[person_index].get_seat();
+        else if (member_type == "Graduate")
+        {
+            temp = grad_student[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space." << endl;
+                return;
+            }
+            else
+            {
+                if (temp->get_is_empty() == false)
+                {
+                    if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() != hour2)
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            temp = professor[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space." << endl;
+                return;
+            }
+            else
+            {
+                if (temp->get_is_empty() == false)
+                {
+                    if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() != hour2)
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            temp = student[person_index].get_seat();
+        }
+        else if (member_type == "Graduate")
+        {
+            temp = grad_student[person_index].get_seat();
+        }
+        else if (member_type == "Faculty")
+        {
+            temp = professor[person_index].get_seat();
+        }
         temp->set_is_empty(true);
         temp->set_leaving_time(hour2);
         of << "0\tSuccess." << endl;
@@ -1224,26 +1573,79 @@ class library
         hour2 = stoi(hour);
         today_date = year2 * 360 + 30 * month2 + date2;
         today_hour = hour2;
-        for (int i = 0; i < student.size(); i++)
+        if (member_type == "Undergraduate")
         {
-            if (person == student[i].getname())
+            for (int i = 0; i < student.size(); i++)
             {
-                person_index = i;
-                person_exist_flag = 1;
-                break;
+                if (person == student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Graduate")
+        {
+            for (int i = 0; i < grad_student.size(); i++)
+            {
+                if (person == grad_student[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            for (int i = 0; i < professor.size(); i++)
+            {
+                if (person == professor[i].getname())
+                {
+                    person_index = i;
+                    person_exist_flag = 1;
+                    break;
+                }
             }
         }
         if (person_exist_flag == 0)
         {
             add_new_member(person, member_type);
-            for (int i = 0; i < student.size(); i++)
+            if (member_type == "Undergraduate")
             {
-
-                if (student[i].getname() == person)
+                for (int i = 0; i < student.size(); i++)
                 {
-                    person_index = i;
-                    person_exist_flag = 1;
-                    break;
+                    if (person == student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Graduate")
+            {
+                for (int i = 0; i < grad_student.size(); i++)
+                {
+                    if (person == grad_student[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (member_type == "Faculty")
+            {
+                for (int i = 0; i < professor.size(); i++)
+                {
+                    if (person == professor[i].getname())
+                    {
+                        person_index = i;
+                        person_exist_flag = 1;
+                        break;
+                    }
                 }
             }
         }
@@ -1253,32 +1655,104 @@ class library
             of << "8\tInvalid space id." << endl;
             return;
         }
-        seat *temp = student[person_index].get_seat();
-        if (temp == NULL)
+        seat *temp;
+
+        if (member_type == "Undergraduate")
         {
-            of << "10\tYou did not borrow this space." << endl;
-            return;
-        }
-        else
-        {
-            if (temp->get_is_empty() == false)
+            temp = student[person_index].get_seat();
+            if (temp == NULL)
             {
-                if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
-                {
-                    of << "10\tYou did not borrow this space." << endl;
-                    return;
-                }
+                of << "10\tYou did not borrow this space." << endl;
+                return;
             }
             else
             {
-                if (temp->get_leaving_time() != hour2)
+                if (temp->get_is_empty() == false)
                 {
-                    of << "10\tYou did not borrow this space." << endl;
-                    return;
+                    if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() != hour2)
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
                 }
             }
         }
-        temp = student[person_index].get_seat();
+        else if (member_type == "Graduate")
+        {
+            temp = grad_student[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space." << endl;
+                return;
+            }
+            else
+            {
+                if (temp->get_is_empty() == false)
+                {
+                    if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() != hour2)
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+            }
+        }
+        else if (member_type == "Faculty")
+        {
+            temp = professor[person_index].get_seat();
+            if (temp == NULL)
+            {
+                of << "10\tYou did not borrow this space." << endl;
+                return;
+            }
+            else
+            {
+                if (temp->get_is_empty() == false)
+                {
+                    if (!(temp->get_borrowed_date() == today_date && temp->get_have_to_return_time() > hour2))
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (temp->get_leaving_time() != hour2)
+                    {
+                        of << "10\tYou did not borrow this space." << endl;
+                        return;
+                    }
+                }
+            }
+        }
+        if (member_type == "Undergraduate")
+        {
+            temp = student[person_index].get_seat();
+        }
+        else if (member_type == "Graduate")
+        {
+            temp = grad_student[person_index].get_seat();
+        }
+        else if (member_type == "Faculty")
+        {
+            temp = professor[person_index].get_seat();
+        }
         temp->set_is_empty(false);
         of << "0\tSuccess." << endl;
     }

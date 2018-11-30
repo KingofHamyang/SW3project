@@ -11,6 +11,7 @@ protected:
   int available_time_end;
   int borrowing_person_limit;
   string borrowing_person;
+  string borrowing_person_type;
   int borrowed_time;
   int have_to_return_time;
   int borrowed_date;
@@ -49,6 +50,14 @@ public:
   void set_borrowing_person(string a)
   {
     borrowing_person = a;
+  }
+  void set_borrowing_person_type(string a)
+  {
+    borrowing_person_type = a;
+  }
+  string get_borrowing_person_type()
+  {
+    return borrowing_person_type;
   }
   bool get_is_borrowed()
   {

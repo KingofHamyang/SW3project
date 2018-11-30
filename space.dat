@@ -1,2 +1,4 @@
 Date[yy/mm/dd/hh]	Space_type	Space_number	Operation	Member_type	Member_name	Number_of_member	Time
-2019/03/23/13	Seat	1	R	Undergraduate Tom
+2018/03/23/13	Seat	1	B	Undergraduate Tom	1	2
+2018/03/23/14	Seat	1	E	Undergraduate Tom
+2018/03/23/14	Seat	1	C	Graduate Tom

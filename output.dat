@@ -1,7 +1,9 @@
 Op_#	Return_code	Description
-1	10	You did not borrow this space1.
+1	0	Success.
 2	0	Success.
-3	0	Success.
-4	3	You did not borrow this book.
-5	5	Other member already borrowed magazine book. This book will be returned at 19/05/09
-6	0	Success.
+3	10	You did not borrow this space.
+4	0	Success.
+5	0	Success.
+6	3	You did not borrow this book.
+7	5	Other member already borrowed magazine book. This book will be returned at 19/05/09
+8	0	Success.

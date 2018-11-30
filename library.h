@@ -337,7 +337,7 @@ class library
                             }
                             else
                             {
-                                return_the_magazine(resourcename, member_name, date1, membertype, resourcetype);
+                                return_the_magazine(resourcename.substr(0, index_), member_name, date1, membertype, resourcetype, resourcename, emitted_date);
                             }
                         }
                         else if (resourcetype == "E-book")
@@ -427,7 +427,7 @@ class library
                         }
                         else
                         {
-                            return_the_magazine(resourcename, member_name, date1, membertype, resourcetype);
+                            return_the_magazine(resourcename.substr(0, index_), member_name, date1, membertype, resourcetype, resourcename, emitted_date);
                         }
                     }
                     else if (resourcetype == "E-book")
@@ -1308,6 +1308,7 @@ class library
         int y_m2 = stoi(y_m);
         int m_m2 = stoi(m_m);
         magazine_date = y_m2 * 360 + m_m2 * 30;
+
         string temp_book;
         int temp_book2;
         int temp_student2;
@@ -1389,8 +1390,8 @@ class library
         {
 
             temp_book = magazines[i].getname();
-            //cout << temp_book << " " << endl;
-            if (temp_book == b)
+
+            if (temp_book == real_magazine_name)
             {
                 temp_book2 = i;
                 flag_Book = 1;
@@ -1402,10 +1403,10 @@ class library
             add_new_magazine(real_magazine_name);
             for (int i = 0; i < magazines.size(); i++)
             {
-
+                cout << temp_book << " borrow " << endl;
                 temp_book = magazines[i].getname();
                 //cout << temp_book << " " << endl;
-                if (temp_book == b)
+                if (temp_book == real_magazine_name)
                 {
                     temp_book2 = i;
                     flag_Book = 1;
@@ -1489,7 +1490,7 @@ class library
         {
             if (memeber_type == "Undergraduate")
             {
-                if (student[temp_student2].is_borrow_this_magazine(b))
+                if (student[temp_student2].is_borrow_this_magazine(real_magazine_name))
                 {
                     of << "4\tYou already borrowed this magazine at" << convert_date(magazines[temp_book2].get_borrow_date()) << endl;
                     return;
@@ -1507,7 +1508,7 @@ class library
             }
             else if (memeber_type == "Graduate")
             {
-                if (grad_student[temp_student2].is_borrow_this_magazine(b))
+                if (grad_student[temp_student2].is_borrow_this_magazine(real_magazine_name))
                 {
                     of << "4\tYou already borrowed this magazine at" << convert_date(magazines[temp_book2].get_borrow_date()) << endl;
                     return;
@@ -1525,7 +1526,7 @@ class library
             }
             else if (memeber_type == "Faculty")
             {
-                if (professor[temp_student2].is_borrow_this_magazine(b))
+                if (professor[temp_student2].is_borrow_this_magazine(real_magazine_name))
                 {
                     of << "4\tYou already borrowed this magazine at" << convert_date(magazines[temp_book2].get_borrow_date()) << endl;
                     return;
@@ -2341,18 +2342,45 @@ class library
         }
     }
 
-    void return_the_magazine(string b, string p, string date, string member_type, string book_type)
+    void return_the_magazine(string b, string p, string date, string member_type, string book_type, string real_magazine_name, string emitted_date)
     {
+
+        string year;
+        string month;
+        string day;
+        int year2, month2, date2;
+        int today_date;
+        year = date.substr(0, 2);
+        year2 = stoi(year);
+        month = date.substr(3, 2);
+        month2 = stoi(month);
+        day = date.substr(6, 2);
+        date2 = stoi(day);
+        today_date = year2 * 360 + 30 * month2 + date2;
+
         string temp_book;
         int temp_book2;
         int temp_student2;
         int flag_Book = 0;
         int flag_person = 0;
         string temp_student;
+        cout << b << " asdf" << endl;
+
+        int magazine_date;
+        string y_m;
+        string m_m;
+        y_m = emitted_date.substr(1, 2);
+        m_m = emitted_date.substr(4, 2);
+
+        int y_m2 = stoi(y_m);
+        int m_m2 = stoi(m_m);
+        magazine_date = y_m2 * 360 + m_m2 * 30;
+
         for (int i = 0; i < magazines.size(); i++)
         {
 
             temp_book = magazines[i].getname();
+            cout << temp_book << endl;
             if (temp_book == b)
             {
                 temp_book2 = i;
@@ -2407,6 +2435,45 @@ class library
             of << "1\tNon exist resource." << endl;
             return;
         }
+        else
+        {
+            if (!(today_date - magazine_date <= 360 && today_date - magazine_date >= 0))
+            {
+                of << "1\tNon exist resource." << endl;
+                return;
+            }
+        }
+
+        flag_Book = 0;
+        for (int i = 0; i < magazines.size(); i++)
+        {
+
+            temp_book = magazines[i].getname();
+
+            if (temp_book == real_magazine_name)
+            {
+                temp_book2 = i;
+                flag_Book = 1;
+                break;
+            }
+        }
+        if (flag_Book == 0)
+        {
+            add_new_magazine(real_magazine_name);
+            for (int i = 0; i < magazines.size(); i++)
+            {
+                cout << temp_book << " borrow " << endl;
+                temp_book = magazines[i].getname();
+                //cout << temp_book << " " << endl;
+                if (temp_book == real_magazine_name)
+                {
+                    temp_book2 = i;
+                    flag_Book = 1;
+                    break;
+                }
+            }
+        }
+
         if (flag_person == 0)
         {
             add_new_member(p, member_type);
@@ -2479,18 +2546,6 @@ class library
             }
         }
 
-        string year;
-        string month;
-        string day;
-        int year2, month2, date2;
-        int today_date;
-        year = date.substr(0, 2);
-        year2 = stoi(year);
-        month = date.substr(3, 2);
-        month2 = stoi(month);
-        day = date.substr(6, 2);
-        date2 = stoi(day);
-        today_date = year2 * 360 + 30 * month2 + date2;
         if (member_type == "Undergraduate")
         {
             if (magazines[temp_book2].get_borrow_date() + 13 < today_date)

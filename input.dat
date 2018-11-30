@@ -1,3 +1,6 @@
 Date[yy/mm/dd]	Resource_type	Resource_name	Operation	Member_type	Member_name
 19/04/10	Magazine	Newton1[19/03]	B	Graduate	BruceLee
-19/04/11	Magazine	Newton1[19/03]	B	Graduate	BruceLe
+19/04/11	Magazine	Newton1[18/12]	B	Graduate	BruceLee
+19/04/14	Magazine	Newton1[19/01]	R	Graduate	BruceLee
+19/04/14	Magazine	Newton1[19/03]	B	Undergraduate	BruceLee
+19/05/18	E-book	Amazone1	B	Graduate	BruceLee

@@ -11,6 +11,7 @@ class library
     vector<book> books;
     int bookcount;
     int studentcount;
+    int test;
     string convert_date(int a)
     {
         int year_date;

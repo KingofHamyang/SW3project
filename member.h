@@ -257,6 +257,25 @@ public:
     }
     return -1;
   }
+  bool none_returned_resource(int loan_period, int today)
+  {
+    bool overdue = false;
+    for (int i = 0; i < borrowings_e_book.size(); i++)
+    {
+      if (borrowings_e_book[i]->get_borrow_date() + loan_period < today)
+      {
+        return true;
+      }
+    }
+    for (int i = 0; i < borrowings_magazine.size(); i++)
+    {
+      if (borrowings_magazine[i]->get_borrow_date() + loan_period < today)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 class undergraduate : public member
 {

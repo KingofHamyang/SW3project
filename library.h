@@ -221,55 +221,153 @@ class library
 
                     if (Sdate < Bdate)
                     {
-
-                        ss2 >> resourcetype;
-                        if (resourcetype == "StudyRoom")
+                        try
                         {
-                            ss2 >> space_id;
-                            ss2 >> operation;
-                            ss2 >> membertype;
-                            ss2 >> member_name;
 
-                            of << cnt << "\t";
-                            cnt++;
-                            cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
-                            if (operation == "B")
+                            ss2 >> resourcetype;
+                            if (resourcetype == "StudyRoom")
                             {
-                                ss2 >> number_of_member;
-                                ss2 >> time_to;
-                                borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
+                                ss2 >> space_id;
+                                ss2 >> operation;
+                                ss2 >> membertype;
+                                ss2 >> member_name;
+
+                                of << cnt << "\t";
+                                cnt++;
+                                cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
+                                if (convert_date_to_int(date2) < convert_date_to_int("09/12/30"))
+                                {
+                                    throw 1;
+                                }
+
+                                if (!(operation == "B" || operation == "R"))
+                                {
+                                    throw 5;
+                                }
+                                if (!(membertype == "Faculty" || membertype == "Undergraduate" || membertype == "Graduate"))
+                                {
+                                    throw 4;
+                                }
+                                for (int index = 0; index < member_name.size(); index++)
+                                {
+                                    if (member_name[index] - '0' < 10 && member_name[index] - '0' >= 0)
+                                    {
+                                        throw 7;
+                                    }
+                                }
+                                if (time_to[0] == '-')
+                                {
+                                    throw 8;
+                                }
+                                if (operation == "B")
+                                {
+                                    ss2 >> number_of_member;
+                                    ss2 >> time_to;
+                                    borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
+                                }
+                                else if (operation == "R")
+                                {
+                                    return_study_room(space_id, date2, member_name, membertype);
+                                }
+                                else
+                                {
+                                    throw 2;
+                                }
                             }
-                            else if (operation == "R")
+                            else if (resourcetype == "Seat")
                             {
-                                return_study_room(space_id, date2, member_name, membertype);
+                                ss2 >> space_id;
+                                ss2 >> operation;
+                                ss2 >> membertype;
+                                ss2 >> member_name;
+                                cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
+                                of << cnt << "\t";
+                                cnt++;
+                                if (convert_date_to_int(date2) < convert_date_to_int("09/12/30"))
+                                {
+                                    throw 1;
+                                }
+
+                                if (!(operation == "B" || operation == "R" || operation == "E" || operation == "C"))
+                                {
+                                    throw 5;
+                                }
+                                if (!(membertype == "Faculty" || membertype == "Undergraduate" || membertype == "Graduate"))
+                                {
+                                    throw 4;
+                                }
+                                for (int index = 0; index < member_name.size(); index++)
+                                {
+                                    if (member_name[index] - '0' < 10 && member_name[index] - '0' >= 0)
+                                    {
+                                        throw 7;
+                                    }
+                                }
+
+                                if (time_to[0] == '-')
+                                {
+                                    throw 8;
+                                }
+                                if (operation == "B")
+                                {
+                                    ss2 >> number_of_member;
+                                    ss2 >> time_to;
+                                    borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
+                                }
+                                else if (operation == "E")
+                                {
+                                    emptify_seat(space_id, date2, member_name, membertype);
+                                }
+                                else if (operation == "R")
+                                {
+                                    return_seat(space_id, date2, member_name, membertype);
+                                }
+                                else if (operation == "C")
+                                {
+                                    comback_seat(space_id, date2, member_name, membertype);
+                                }
+                                else
+                                {
+                                    throw 2;
+                                }
+                            }
+                            else
+                            {
+                                throw 6;
                             }
                         }
-                        else if (resourcetype == "Seat")
+                        catch (int err)
                         {
-                            ss2 >> space_id;
-                            ss2 >> operation;
-                            ss2 >> membertype;
-                            ss2 >> member_name;
-                            cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
-                            of << cnt << "\t";
-                            cnt++;
+                            of << "-1\t";
+                            if (err == 1)
+                            {
+                                of << "Date out of Range" << endl;
+                            }
+                            else if (err == 6)
+                            {
+                                of << "Non-exist space type" << endl;
+                            }
+                            else if (err == 5)
+                            {
+                                of << "Non-exist operation" << endl;
+                            }
+                            else if (err == 4)
+                            {
+                                of << "Non-exist member type" << endl;
+                            }
+                            else if (err == 7)
+                            {
+                                of << "Member name with numbers" << endl;
+                            }
+                            else
+                            {
+                                of << "Negative time" << endl;
+                            }
+
                             if (operation == "B")
                             {
                                 ss2 >> number_of_member;
                                 ss2 >> time_to;
-                                borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
-                            }
-                            else if (operation == "E")
-                            {
-                                emptify_seat(space_id, date2, member_name, membertype);
-                            }
-                            else if (operation == "R")
-                            {
-                                return_seat(space_id, date2, member_name, membertype);
-                            }
-                            else if (operation == "C")
-                            {
-                                comback_seat(space_id, date2, member_name, membertype);
                             }
                         }
                         cntcnt++;
@@ -289,6 +387,7 @@ class library
                     }
                     else
                     {
+
                         ss1 >> resourcetype;
                         if (resourcetype == "Book")
                         {
@@ -299,12 +398,13 @@ class library
                             cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
                             of << cnt << "\t";
                             cnt++;
+
                             if (operation == "B")
                             {
 
                                 borrowing_book(member_name, resourcename, date1, membertype, resourcetype);
                             }
-                            else
+                            else if (operation == "R")
                             {
                                 return_the_book(resourcename, member_name, date1, membertype, resourcetype);
                             }
@@ -332,11 +432,12 @@ class library
                             cout << space_id << " " << operation << " " << membertype << " " << member_name << " " << emitted_date << endl;
                             of << cnt << "\t";
                             cnt++;
+
                             if (operation == "B")
                             {
                                 borrowing_magazine(member_name, resourcename.substr(0, index_), date1, membertype, resourcetype, emitted_date);
                             }
-                            else
+                            else if (operation == "R")
                             {
                                 return_the_magazine(resourcename.substr(0, index_), member_name, date1, membertype, resourcetype, resourcename, emitted_date);
                             }
@@ -350,16 +451,18 @@ class library
                             cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
                             of << cnt << "\t";
                             cnt++;
+
                             if (operation == "B")
                             {
 
                                 borrowing_E_book(member_name, resourcename, date1, membertype, resourcetype);
                             }
-                            else
+                            else if (operation == "R")
                             {
                                 return_the_E_book(resourcename, member_name, date1, membertype, resourcetype);
                             }
                         }
+
                         cntcnt++;
                         if (getline(openFile, line1))
                         {
@@ -378,6 +481,7 @@ class library
                 }
                 else if (book_flag == 0 && space_flag == 1)
                 {
+
                     ss1 >> resourcetype;
                     if (resourcetype == "Book")
                     {
@@ -388,12 +492,13 @@ class library
                         cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
                         of << cnt << "\t";
                         cnt++;
+
                         if (operation == "B")
                         {
 
                             borrowing_book(member_name, resourcename, date1, membertype, resourcetype);
                         }
-                        else
+                        else if (operation == "R")
                         {
                             return_the_book(resourcename, member_name, date1, membertype, resourcetype);
                         }
@@ -421,12 +526,13 @@ class library
                         cout << space_id << " " << operation << " " << membertype << " " << member_name << emitted_date << endl;
                         of << cnt << "\t";
                         cnt++;
+
                         if (operation == "B")
                         {
 
                             borrowing_magazine(member_name, resourcename.substr(0, index_), date1, membertype, resourcetype, emitted_date);
                         }
-                        else
+                        else if (operation == "R")
                         {
                             return_the_magazine(resourcename.substr(0, index_), member_name, date1, membertype, resourcetype, resourcename, emitted_date);
                         }
@@ -440,16 +546,18 @@ class library
                         cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
                         of << cnt << "\t";
                         cnt++;
+
                         if (operation == "B")
                         {
 
                             borrowing_E_book(member_name, resourcename, date1, membertype, resourcetype);
                         }
-                        else
+                        else if (operation == "R")
                         {
                             return_the_E_book(resourcename, member_name, date1, membertype, resourcetype);
                         }
                     }
+
                     cntcnt++;
                     if (getline(openFile, line1))
                     {
@@ -465,53 +573,149 @@ class library
                 }
                 else if (book_flag == 1 && space_flag == 0)
                 {
-                    ss2 >> resourcetype;
-                    if (resourcetype == "StudyRoom")
+                    try
                     {
-                        ss2 >> space_id;
-                        ss2 >> operation;
-                        ss2 >> membertype;
-                        ss2 >> member_name;
-                        cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
-                        of << cnt << "\t";
-                        cnt++;
-                        if (operation == "B")
+                        ss2 >> resourcetype;
+                        if (resourcetype == "StudyRoom")
                         {
-                            ss2 >> number_of_member;
-                            ss2 >> time_to;
-                            borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
+                            ss2 >> space_id;
+                            ss2 >> operation;
+                            ss2 >> membertype;
+                            ss2 >> member_name;
+                            cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
+                            of << cnt << "\t";
+                            cnt++;
+                            if (convert_date_to_int(date2) < convert_date_to_int("09/12/30"))
+                            {
+                                throw 1;
+                            }
+
+                            if (!(operation == "B" || operation == "R"))
+                            {
+                                throw 5;
+                            }
+                            if (!(membertype == "Faculty" || membertype == "Undergraduate" || membertype == "Graduate"))
+                            {
+                                throw 4;
+                            }
+                            for (int index = 0; index < member_name.size(); index++)
+                            {
+                                if (member_name[index] - '0' < 10 && member_name[index] - '0' >= 0)
+                                {
+                                    throw 7;
+                                }
+                            }
+                            if (time_to[0] == '-')
+                            {
+                                throw 8;
+                            }
+                            if (operation == "B")
+                            {
+                                ss2 >> number_of_member;
+                                ss2 >> time_to;
+                                borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
+                            }
+                            else if (operation == "R")
+                            {
+                                return_study_room(space_id, date2, member_name, membertype);
+                            }
+                            else
+                            {
+                                throw 2;
+                            }
                         }
-                        else if (operation == "R")
+                        else if (resourcetype == "Seat")
                         {
-                            return_study_room(space_id, date2, member_name, membertype);
+                            ss2 >> space_id;
+                            ss2 >> operation;
+                            ss2 >> membertype;
+                            ss2 >> member_name;
+                            cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
+                            of << cnt << "\t";
+                            cnt++;
+                            if (convert_date_to_int(date2) < convert_date_to_int("09/12/30"))
+                            {
+                                throw 1;
+                            }
+
+                            if (!(operation == "B" || operation == "R" || operation == "E" || operation == "C"))
+                            {
+                                throw 5;
+                            }
+                            if (!(membertype == "Faculty" || membertype == "Undergraduate" || membertype == "Graduate"))
+                            {
+                                throw 4;
+                            }
+                            for (int index = 0; index < member_name.size(); index++)
+                            {
+                                if (member_name[index] - '0' < 10 && member_name[index] - '0' >= 0)
+                                {
+                                    throw 7;
+                                }
+                            }
+                            if (time_to[0] == '-')
+                            {
+                                throw 8;
+                            }
+                            if (operation == "B")
+                            {
+                                ss2 >> number_of_member;
+                                ss2 >> time_to;
+                                borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
+                            }
+                            else if (operation == "E")
+                            {
+                                emptify_seat(space_id, date2, member_name, membertype);
+                            }
+                            else if (operation == "R")
+                            {
+                                return_seat(space_id, date2, member_name, membertype);
+                            }
+                            else if (operation == "C")
+                            {
+                                comback_seat(space_id, date2, member_name, membertype);
+                            }
+                            else
+                            {
+                                throw 2;
+                            }
+                        }
+                        else
+                        {
+                            throw 6;
                         }
                     }
-                    else if (resourcetype == "Seat")
+                    catch (int err)
                     {
-                        ss2 >> space_id;
-                        ss2 >> operation;
-                        ss2 >> membertype;
-                        ss2 >> member_name;
-                        cout << space_id << " " << operation << " " << membertype << " " << member_name << endl;
-                        of << cnt << "\t";
-                        cnt++;
+                        of << "-1\t";
+                        if (err == 1)
+                        {
+                            of << "Date out of Range" << endl;
+                        }
+                        else if (err == 6)
+                        {
+                            of << "Non-exist space type" << endl;
+                        }
+                        else if (err == 5)
+                        {
+                            of << "Non-exist operation" << endl;
+                        }
+                        else if (err == 4)
+                        {
+                            of << "Non-exist member type" << endl;
+                        }
+                        else if (err == 7)
+                        {
+                            of << "Member name with numbers" << endl;
+                        }
+                        else
+                        {
+                            of << "Negative time" << endl;
+                        }
                         if (operation == "B")
                         {
                             ss2 >> number_of_member;
                             ss2 >> time_to;
-                            borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
-                        }
-                        else if (operation == "E")
-                        {
-                            emptify_seat(space_id, date2, member_name, membertype);
-                        }
-                        else if (operation == "R")
-                        {
-                            return_seat(space_id, date2, member_name, membertype);
-                        }
-                        else if (operation == "C")
-                        {
-                            comback_seat(space_id, date2, member_name, membertype);
                         }
                     }
                     //space get
@@ -2126,7 +2330,7 @@ class library
         }
         if (memeber_type == "Undergraduate")
         {
-            if (student[temp_student2].get_borrowing_magazine_cnt() == 1)
+            if (student[temp_student2].get_borrowing_magazine_cnt() + student[temp_student2].get_borrowing_book_cnt() >= 1)
             {
                 of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
                 return;
@@ -2134,7 +2338,7 @@ class library
         }
         else if (memeber_type == "Graduate")
         {
-            if (grad_student[temp_student2].get_borrowing_magazine_cnt() == 5)
+            if (grad_student[temp_student2].get_borrowing_magazine_cnt() + grad_student[temp_student2].get_borrowing_book_cnt() >= 5)
             {
                 of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 2 << endl;
                 return;
@@ -2142,7 +2346,7 @@ class library
         }
         else if (memeber_type == "Faculty")
         {
-            if (professor[temp_student2].get_borrowing_magazine_cnt() == 10)
+            if (professor[temp_student2].get_borrowing_magazine_cnt() + professor[temp_student2].get_borrowing_book_cnt() >= 10)
             {
                 of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 3 << endl;
                 return;
@@ -2217,6 +2421,11 @@ class library
                     return;
                 }
             }
+            if (student[temp_student2].none_returned_resource(13, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
+            }
         }
         else if (memeber_type == "Graduate")
         {
@@ -2229,6 +2438,11 @@ class library
                     return;
                 }
             }
+            if (grad_student[temp_student2].none_returned_resource(29, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
+            }
         }
         else if (memeber_type == "Faculty")
         {
@@ -2240,6 +2454,11 @@ class library
                     of << "6\tRestricted member until " << convert_date(professor[temp_student2].get_restricted_date()) << endl;
                     return;
                 }
+            }
+            if (professor[temp_student2].none_returned_resource(29, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
             }
         }
 
@@ -2500,6 +2719,12 @@ class library
                 int size_ = student[temp_student2].get_storage() + e_books[temp_book2].get_size();
                 student[temp_student2].set_storage(size_);
             }
+
+            if (student[temp_student2].none_returned_resource(13, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
+            }
         }
         else if (memeber_type == "Graduate")
         {
@@ -2513,6 +2738,11 @@ class library
                 int size_ = grad_student[temp_student2].get_storage() + e_books[temp_book2].get_size();
                 grad_student[temp_student2].set_storage(size_);
             }
+            if (grad_student[temp_student2].none_returned_resource(29, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
+            }
         }
         else if (memeber_type == "Faculty")
         {
@@ -2525,6 +2755,11 @@ class library
             {
                 int size_ = professor[temp_student2].get_storage() + e_books[temp_book2].get_size();
                 professor[temp_student2].set_storage(size_);
+            }
+            if (professor[temp_student2].none_returned_resource(29, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
             }
         }
 
@@ -2672,7 +2907,7 @@ class library
         }
         if (memeber_type == "Undergraduate")
         {
-            if (student[temp_student2].get_borrowing_book_cnt() == 1)
+            if (student[temp_student2].get_borrowing_book_cnt() + student[temp_student2].get_borrowing_magazine_cnt() >= 1)
             {
                 of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 1 << endl;
                 return;
@@ -2680,7 +2915,7 @@ class library
         }
         else if (memeber_type == "Graduate")
         {
-            if (grad_student[temp_student2].get_borrowing_book_cnt() == 5)
+            if (grad_student[temp_student2].get_borrowing_book_cnt() + grad_student[temp_student2].get_borrowing_magazine_cnt() >= 5)
             {
                 of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 5 << endl;
                 return;
@@ -2688,7 +2923,7 @@ class library
         }
         else if (memeber_type == "Faculty")
         {
-            if (professor[temp_student2].get_borrowing_book_cnt() == 10)
+            if (professor[temp_student2].get_borrowing_book_cnt() + professor[temp_student2].get_borrowing_magazine_cnt() >= 10)
             {
                 of << "2\tExceeds your possible number of borrow. Possible # of borrows: " << 10 << endl;
                 return;
@@ -2763,6 +2998,11 @@ class library
                     return;
                 }
             }
+            if (student[temp_student2].none_returned_resource(13, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
+            }
         }
         else if (memeber_type == "Graduate")
         {
@@ -2775,6 +3015,11 @@ class library
                     return;
                 }
             }
+            if (grad_student[temp_student2].none_returned_resource(29, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
+            }
         }
         else if (memeber_type == "Faculty")
         {
@@ -2786,6 +3031,11 @@ class library
                     of << "6\tRestricted member until " << convert_date(professor[temp_student2].get_restricted_date()) << endl;
                     return;
                 }
+            }
+            if (professor[temp_student2].none_returned_resource(29, today_date) == true)
+            {
+                of << "16\tPreviously borrowed books are overdue, so borrow is limited" << endl;
+                return;
             }
         }
 
@@ -3115,6 +3365,7 @@ class library
 
             if (temp_book == real_magazine_name)
             {
+                printf("asdfasdfasdfsadfsaf######\n");
                 temp_book2 = i;
                 flag_Book = 1;
                 break;
@@ -3186,7 +3437,7 @@ class library
 
         if (member_type == "Undergraduate")
         {
-            if (student[temp_student2].is_borrow_this_magazine(b) == 0)
+            if (student[temp_student2].is_borrow_this_magazine(real_magazine_name) == 0)
             {
                 of << "3\tYou did not borrow this book." << endl;
                 return;
@@ -3194,7 +3445,7 @@ class library
         }
         else if (member_type == "Graduate")
         {
-            if (grad_student[temp_student2].is_borrow_this_magazine(b) == 0)
+            if (grad_student[temp_student2].is_borrow_this_magazine(real_magazine_name) == 0)
             {
                 of << "3\tYou did not borrow this book." << endl;
                 return;
@@ -3202,7 +3453,7 @@ class library
         }
         else if (member_type == "Faculty")
         {
-            if (professor[temp_student2].is_borrow_this_magazine(b) == 0)
+            if (professor[temp_student2].is_borrow_this_magazine(real_magazine_name) == 0)
             {
                 of << "3\tYou did not borrow this book." << endl;
                 return;
@@ -3250,15 +3501,15 @@ class library
         }
         if (member_type == "Undergraduate")
         {
-            student[temp_student2].returning_magazine(b);
+            student[temp_student2].returning_magazine(real_magazine_name);
         }
         else if (member_type == "Graduate")
         {
-            grad_student[temp_student2].returning_magazine(b);
+            grad_student[temp_student2].returning_magazine(real_magazine_name);
         }
         else if (member_type == "Faculty")
         {
-            professor[temp_student2].returning_magazine(b);
+            professor[temp_student2].returning_magazine(real_magazine_name);
         }
         magazines[temp_book2].set_borrowed(0);
     }

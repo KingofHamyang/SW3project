@@ -28,6 +28,12 @@ it includes 3 header files and main function
 
     **borriwng** method is to append the book to the borrowing list
 
+    **변경된 사항!!**
+
+    - 총 빌리고있는 E_Book의 용량을 알기 위해 storage 라는 멤버를 추가하였다.
+    - E_book 을 expiration 시키는 method를 추가하여, 매 E_book관련 처리마다 실행시켜 준다.
+    - 추가된 resource type 별로 getter 와 setter, 빌리고 있는 여부 판단하는 메소드를 추가했다.
+
 - 3. library.h
 
   - it incldues vector for student and books list, constrcutor of this class read the input source data to make a resource list and read the instructions from input.dat file and excution it
@@ -43,6 +49,11 @@ it includes 3 header files and main function
     **return_the_book** method erase th book from the member's borrowing list and check the error message of it and print it
     first, it find the matched resource name. if it doesn't exist, print error
     if it delayed, calculate the `(current_date - borrowed_date)` and restricte him or her.
+
+    **변경된 사항!!**
+
+    - 각 오퍼레이션 별로, 멤버 타입을 검사하여 거기에 알맞는 동작을 해준다.
+    - LAB에서 진행해야 했던, space 관련 오퍼레이션에 Exception Handler를 추가해주었다.
 
 - 4. how to build?
 
@@ -67,5 +78,7 @@ it includes 3 header files and main function
   - 만약 빌린적이 없거나, 자리가 expire 됬다면 에러코드 10을 출력한다. empty 없이 come back이 들어오는 경우는 없으므로, 처리하지 않는다. 해당 seat에 접근하여 is_empty를 false 로 만든다.
 
 ### 기본적으로 expire에 대한 구현은 하지않았다. 어떤 장소에 대한 할당 요청이 들어올때, 그 전에 빌리고있떤 사람이 시간을 제대로 지켰는지 아닌지를 판단하여, 그 사람을 cancle하고 새로운 사람을 배정해준다.
+
+### to_string 과 stoi같은 C++11 부터 지원되는 라이브러리를 사용했기 때문에 컴파일 옵션을 **g++ -std=c++11 main.cpp** 로 주어야 한다.
 
 # I follwe the format in the given example files

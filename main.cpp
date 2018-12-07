@@ -3,10 +3,10 @@
 #include <fstream>
 #include <sstream>
 
-int main(void)
+int main(int argc, char **argv)
 {
 
-    library *lb = new library();
+    library *lb = new library(argc, argv);
 
     return 0;
 }

@@ -95,7 +95,7 @@ class library
         return today_date;
     }
 
-    library()
+    library(int argc, char** argv)
     {
         for (int i = 0; i < 10; i++)
         {
@@ -173,8 +173,12 @@ class library
         print_book_list();
         print_e_book_list();
         print_magazine_list();
-        ifstream openFile("input.dat");
-        ifstream openFile_space("space.dat");
+        
+            ifstream openFile("input.dat");
+
+            ifstream openFile_space("space.dat");
+        
+
 
         int cnt = 1;
         string date1;
@@ -200,17 +204,33 @@ class library
             string line1, line2;
             getline(openFile, line1);
             getline(openFile_space, line2);
-            getline(openFile, line1);
-            getline(openFile_space, line2);
+
+            if(getline(openFile, line1)){
+                cout<<"good!";
+            }
+            else{
+                cout<<"there's no data";
+                book_flag = 1;
+            }
+            if(getline(openFile_space, line2)){
+                
+                cout<<"good";
+            }else{
+                cout<<"there's no data";
+                space_flag = 1;
+            }
             stringstream ss1;
             stringstream ss2;
-            ss1.str(line1);
-            ss2.str(line2);
-            ss1 >> date1;
-            ss2 >> date2;
+            if(book_flag == 0) ss1.str(line1);
+            if(space_flag == 0) ss2.str(line2);
+            if(book_flag == 0) ss1 >> date1;
+            if(space_flag == 0) ss2 >> date2;
             int cntcnt = 0;
-            int Bdate = convert_date_to_int(date1);
-            int Sdate = convert_date_to_int(date2);
+            int Bdate;
+
+            if(book_flag == 0) Bdate = convert_date_to_int(date1);
+            int Sdate;
+            if(space_flag == 0) Sdate = convert_date_to_int(date2);
 
             while (!(book_flag == 1 && space_flag == 1))
             {

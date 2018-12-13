@@ -2,6 +2,8 @@
 
 it includes 3 header files and main function
 
+# 스크립트 파일 명령어 중 space의 경우 date 명령 시 yyyy/mm/dd/hh 형식으로 입력해야함. ex) 2018/12/21
+
 ## Files
 
 - 1. resource.h

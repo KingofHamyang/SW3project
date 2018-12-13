@@ -275,15 +275,17 @@ class library
                                         throw 7;
                                     }
                                 }
-                                if (time_to[0] == '-')
-                                {
-                                    throw 8;
-                                }
+                                
                                 if (operation == "B")
                                 {
                                     ss2 >> number_of_member;
                                     ss2 >> time_to;
+                                    if (time_to[0] == '-')
+                                    {
+                                        throw 8;
+                                    }
                                     borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
+
                                 }
                                 else if (operation == "R")
                                 {
@@ -293,6 +295,7 @@ class library
                                 {
                                     throw 2;
                                 }
+                                
                             }
                             else if (resourcetype == "Seat")
                             {
@@ -324,14 +327,15 @@ class library
                                     }
                                 }
 
-                                if (time_to[0] == '-')
-                                {
-                                    throw 8;
-                                }
+                                
                                 if (operation == "B")
                                 {
                                     ss2 >> number_of_member;
                                     ss2 >> time_to;
+                                    if (time_to[0] == '-')
+                                    {
+                                        throw 8;
+                                    }
                                     borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
                                 }
                                 else if (operation == "E")
@@ -350,6 +354,7 @@ class library
                                 {
                                     throw 2;
                                 }
+                                
                             }
                             else
                             {
@@ -358,6 +363,7 @@ class library
                         }
                         catch (int err)
                         {
+                            cout<<time_to;
                             of << "-1\t";
                             if (err == 1)
                             {
@@ -625,14 +631,15 @@ class library
                                     throw 7;
                                 }
                             }
-                            if (time_to[0] == '-')
-                            {
-                                throw 8;
-                            }
+
                             if (operation == "B")
                             {
                                 ss2 >> number_of_member;
                                 ss2 >> time_to;
+                                if (time_to[0] == '-')
+                                    {
+                                        throw 8;
+                                    }
                                 borrowing_study_room(space_id, date2, member_name, number_of_member, time_to, membertype);
                             }
                             else if (operation == "R")
@@ -643,6 +650,7 @@ class library
                             {
                                 throw 2;
                             }
+                            
                         }
                         else if (resourcetype == "Seat")
                         {
@@ -673,14 +681,15 @@ class library
                                     throw 7;
                                 }
                             }
-                            if (time_to[0] == '-')
-                            {
-                                throw 8;
-                            }
+                            
                             if (operation == "B")
                             {
                                 ss2 >> number_of_member;
                                 ss2 >> time_to;
+                                if (time_to[0] == '-')
+                                    {
+                                        throw 8;
+                                    }
                                 borrowing_seat(space_id, date2, member_name, number_of_member, time_to, membertype);
                             }
                             else if (operation == "E")
@@ -708,6 +717,7 @@ class library
                     catch (int err)
                     {
                         of << "-1\t";
+                        cout<<time_to;
                         if (err == 1)
                         {
                             of << "Date out of Range" << endl;

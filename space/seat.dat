@@ -1,0 +1,4 @@
+Op_#	Return_code	Description
+1	-1	Date out of Range
+2	-1	Negative time
+3	10	You did not borrow this space1.
